@@ -1,5 +1,3 @@
-from pprint import pprint
-
 from shotgun_api3 import Shotgun
 from dataclasses import dataclass
 from typing import Optional, Union
@@ -17,7 +15,7 @@ def sge_find(shogun_api: Shotgun, logged_in_user: dict = None, **kwargs) -> list
 
     :param kwargs: The list of parameters that is available to the Shotgun ``find`` method
 
-    :return: list of dictionaries representing each entity with the requested fields, and the defaults ``"id"`` and
+    :return: List of dictionaries representing each entity with the requested fields, and the defaults ``"id"`` and
         ``"type"`` which are always included.
     :rtype: list
     """
@@ -41,6 +39,21 @@ def sge_find(shogun_api: Shotgun, logged_in_user: dict = None, **kwargs) -> list
 
 
 def sge_find_one(shogun_api: Shotgun, logged_in_user: dict = None, **kwargs) -> Optional[dict]:
+    """
+        Shortcut for the :meth:`sge_find` with ``limit=1`` so it returns a single result.
+
+        :param Shotgun shogun_api: An instance of the Shotgun class
+
+        :param dict logged_in_user: Optional dictionary that represents the user you want to act as. This is used for query
+            fields definitions that reference "Me"
+            Example: {'type': 'HumanUser', id: 1}
+
+        :param kwargs: The list of parameters that is available to the Shotgun ``find_one`` method
+
+        :return: Dictionary representing a single matched entity with the requested fields, and the defaults ``"id"`` and
+            ``"type"`` which are always included.
+        :rtype: dict
+    """
     entity = shogun_api.find_one(**kwargs)
     if not entity:
         return None
