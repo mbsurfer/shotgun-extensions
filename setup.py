@@ -11,6 +11,7 @@ setup(
     long_description=long_description,
     version='1.0.0',
     packages=find_packages(),
+    url='https://github.com/mbsurfer/shotgun-extensions',
     install_requires=[
         'shotgun_api3',
     ],

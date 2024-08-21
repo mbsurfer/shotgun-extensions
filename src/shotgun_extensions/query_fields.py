@@ -1,16 +1,25 @@
+from pprint import pprint
+
 from shotgun_api3 import Shotgun
 from dataclasses import dataclass
 from typing import Optional, Union
 
 
-def sge_find(shogun_api: Shotgun, logged_in_user: dict = None,  **kwargs) -> list[dict]:
+def sge_find(shogun_api: Shotgun, logged_in_user: dict = None, **kwargs) -> list[dict]:
     """
-    Find entities using the ShotGrid API and add query fields to the entity dictionary.
+    Find entities using the ShotGrid API and add query fields values to each entity's dictionary.
 
-    :param shogun_api:
-    :param logged_in_user:
-    :param kwargs:
-    :return:
+    :param Shotgun shogun_api: An instance of the Shotgun class
+
+    :param dict logged_in_user: Optional dictionary that represents the user you want to act as. This is used for query
+        fields definitions that reference "Me"
+        Example: {'type': 'HumanUser', id: 1}
+
+    :param kwargs: The list of parameters that is available to the Shotgun ``find`` method
+
+    :return: list of dictionaries representing each entity with the requested fields, and the defaults ``"id"`` and
+        ``"type"`` which are always included.
+    :rtype: list
     """
     entities = shogun_api.find(**kwargs)
     if not entities:
@@ -19,7 +28,8 @@ def sge_find(shogun_api: Shotgun, logged_in_user: dict = None,  **kwargs) -> lis
     fields = kwargs.get('fields', [])
 
     # filter out query fields where key is not in fields
-    query_fields = {query_field: all_query_fields[query_field] for query_field in all_query_fields.keys() if query_field in fields}
+    query_fields = {query_field: all_query_fields[query_field] for query_field in all_query_fields.keys() if
+                    query_field in fields}
 
     if query_fields:
         updated_entities = []
@@ -29,6 +39,7 @@ def sge_find(shogun_api: Shotgun, logged_in_user: dict = None,  **kwargs) -> lis
 
     return entities
 
+
 def sge_find_one(shogun_api: Shotgun, logged_in_user: dict = None, **kwargs) -> Optional[dict]:
     entity = shogun_api.find_one(**kwargs)
     if not entity:
@@ -37,13 +48,16 @@ def sge_find_one(shogun_api: Shotgun, logged_in_user: dict = None, **kwargs) -> 
     fields = kwargs.get('fields', [])
 
     # filter out query fields where key is not in fields
-    query_fields = {query_field: all_query_fields[query_field] for query_field in all_query_fields.keys() if query_field in fields}
+    query_fields = {query_field: all_query_fields[query_field] for query_field in all_query_fields.keys() if
+                    query_field in fields}
 
     if query_fields:
         return add_query_fields_to_entity(shogun_api, entity, query_fields, logged_in_user)
     return entity
 
-def add_query_fields_to_entity(shogun_api: Shotgun, entity: dict, query_fields: dict, logged_in_user: dict = None) -> dict:
+
+def add_query_fields_to_entity(shogun_api: Shotgun, entity: dict, query_fields: dict,
+                               logged_in_user: dict = None) -> dict:
     """Add query fields to the entity dictionary."""
     for field_name, field_schema in query_fields.items():
         query_field = ShotGridQueryField(sg=shogun_api,
@@ -54,11 +68,13 @@ def add_query_fields_to_entity(shogun_api: Shotgun, entity: dict, query_fields: 
         entity[field_name] = query_field.try_get_value()
     return entity
 
+
 def fetch_query_fields(shogun_api: Shotgun, entity_type: str) -> dict:
     """Set query fields from the entity schema dictionary."""
     schema = shogun_api.schema_field_read(entity_type)
     return {field_name: field_definition for field_name, field_definition in schema.items() if
             'query' in field_definition['properties']}
+
 
 def create_related_entity_dict(entity: Optional[dict]):
     """Create a dictionary with the entity type and ID."""
