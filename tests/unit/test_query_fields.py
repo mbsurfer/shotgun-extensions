@@ -1,10 +1,10 @@
 import pytest
-from src.shotgun_extensions import sge_find, sge_find_one
+from shotgun_extensions import sge_find, sge_find_one
 
 
 @pytest.fixture(scope='function')
 def sg(mocker):
-    return mocker.patch('src.shotgun_extensions.query_fields.Shotgun', autospec=True)
+    return mocker.patch('shotgun_extensions.query_fields.Shotgun', autospec=True)
 
 
 def test_sge_find(sg, mocker):
@@ -18,12 +18,12 @@ def test_sge_find(sg, mocker):
             "id": 2
         }
     ])
-    mocker.patch('src.shotgun_extensions.query_fields.fetch_query_fields', return_value={
+    mocker.patch('shotgun_extensions.query_fields.fetch_query_fields', return_value={
         "sg_test_query_field": {
             "type": "str"
         }
     })
-    mocker.patch('src.shotgun_extensions.query_fields.add_query_fields_to_entity',
+    mocker.patch('shotgun_extensions.query_fields.add_query_fields_to_entity',
                  side_effect=[
                      {
                          "type": "Shot",
