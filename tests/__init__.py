@@ -1,0 +1,1 @@
+"""shotgun_extensions test suite"""
